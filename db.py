@@ -6,6 +6,45 @@ from pathlib import Path
 DB_PATH = Path(__file__).resolve().parent / "vocabulary.db"
 
 
+class DBRow:
+    def __init__(self, cursor, row):
+        self._row = row
+        self._columns = [col[0] for col in cursor.description]
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._row[key]
+        if key in self._columns:
+            return self._row[self._columns.index(key)]
+        raise KeyError(key)
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def keys(self):
+        return list(self._columns)
+
+    def items(self):
+        return [(key, self[key]) for key in self._columns]
+
+    def __iter__(self):
+        return iter(self._row)
+
+    def __len__(self):
+        return len(self._row)
+
+    def __getattr__(self, name):
+        if name in self._columns:
+            return self[name]
+        raise AttributeError(f"{type(self).__name__!r} object has no attribute {name!r}")
+
+    def __repr__(self):
+        return f"{type(self).__name__}({dict(self.items())!r})"
+
+
 class VocabularyDB:
     def __init__(self, db_path: Path = DB_PATH):
         self.db_path = db_path
@@ -13,9 +52,15 @@ class VocabularyDB:
 
     def _get_connection(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
+        conn.row_factory = self._row_factory
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
+
+    @staticmethod
+    def _row_factory(cursor, row):
+        if row is None:
+            return None
+        return DBRow(cursor, row)
 
     def _ensure_db(self) -> None:
         with self._get_connection() as conn:
