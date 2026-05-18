@@ -222,6 +222,12 @@ class VocabularyDB:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM words WHERE id = ?", (word_id,))
             return cursor.fetchone()
+        
+    def get_word_by_name(self, name: str):
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM words WHERE text = ?", (name,))
+            return cursor.fetchone()
 
     def list_words(self):
         with self._get_connection() as conn:
