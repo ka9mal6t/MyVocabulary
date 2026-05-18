@@ -15,14 +15,15 @@ class Level(Enum):
 
 
 def add_levels():
+    """Add predefined vocabulary levels to the database"""
     db = VocabularyDB()
+    for level in Level:
+        if not db.get_level_by_name(level.name):
+            db.add_level(level.name)
+            Log.info(f"Added level: {level.name}")
+        else:
+            Log.info(f"Level already exists: {level.name}")
     
-    if len(db.list_levels()) > 0:
-        Log.info("Levels already exist in the database.")
-        return
-    
-    for lvl in Level:
-        db.add_level(lvl.name)
-        Log.info(f"Levels added successfully. Current levels: {lvl.name}")
+
 
 
