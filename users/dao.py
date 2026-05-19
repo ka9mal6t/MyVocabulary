@@ -5,7 +5,7 @@ class UserDAO:
     """Data Access Object for user-related operations"""
     
     def __init__(self):
-        self.db = VocabularyDB()
+        self.__db = VocabularyDB()
     
     def register_user(self, username, email):
         """
@@ -16,12 +16,12 @@ class UserDAO:
         Returns:
             tuple: A boolean indicating success and a message
         """
-        if self.db.get_user_by_username(username):
+        if self.__db.get_user_by_username(username):
             Log.warning(f"Attempt to register existing user: {username}")
             return False, f"User '{username}' already exists."
             
         
-        self.db.add_user(username, email)
+        self.__db.add_user(username, email)
         Log.info(f"User registered successfully: {username}")
         return True, f"User '{username}' registered successfully."
     
@@ -34,10 +34,10 @@ class UserDAO:
         Returns:
             tuple: A boolean indicating success and a message
         """
-        user = self.db.authenticate_user(username, password)
+        user = self.__db.authenticate_user(username, password)
         if not user:
             Log.warning(f"Failed login attempt for user: {username}")
             return False, f"User '{username}' not found."
         Log.info(f"User logged in successfully: {username}")
-        self.db.update_last_seen(user.id)
+        self.__db.update_last_seen(user.id)
         return True, user

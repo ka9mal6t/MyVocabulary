@@ -7,7 +7,7 @@ class WordAdminDAO:
     """Data Access Object for word-related operations"""
     
     def __init__(self):
-        self.db = VocabularyDB()
+        self.__db = VocabularyDB()
     
     def add_word(self, word, level_name):
         """
@@ -18,16 +18,16 @@ class WordAdminDAO:
         Returns:
             tuple: A boolean indicating success and a message
         """
-        if self.db.get_word_by_name(word):
+        if self.__db.get_word_by_name(word):
             Log.warning(f"Attempt to add existing word: {word} | {level_name}")
             return False, f"Word '{word}' already exists."
         
-        level: Level = self.db.get_level_by_name(level_name)
+        level: Level = self.__db.get_level_by_name(level_name)
         if not level or level_name not in Level.__members__:
             Log.warning(f"Attempt to add word with non-existent level: {level_name}")
             return False, f"Level '{level_name}' does not exist."
         
-        self.db.add_word(word, level.id)
+        self.__db.add_word(word, level.id)
         Log.info(f"Word added successfully: {word} | {level_name}")
         return True, f"Word '{word}' added successfully."
     
@@ -40,12 +40,12 @@ class WordAdminDAO:
             tuple: A boolean indicating success and a message
         """
 
-        word_obj: IWord = self.db.get_word_by_name(word)
+        word_obj: IWord = self.__db.get_word_by_name(word)
         if not word_obj:
             Log.warning(f"Attempt to delete non-existent word: {word}")
             return False, f"Word '{word}' does not exist."
         
-        self.db.delete_word(word_obj.id)
+        self.__db.delete_word(word_obj.id)
         Log.info(f"Word deleted successfully: {word} | {Level(word_obj.level_id).name}")
         return True, f"Word '{word}' deleted successfully."
     
@@ -58,17 +58,17 @@ class WordAdminDAO:
         Returns:
             tuple: A boolean indicating success and a message
         """
-        word_obj: IWord = self.db.get_word_by_name(word)
+        word_obj: IWord = self.__db.get_word_by_name(word)
         if not word_obj:
             Log.warning(f"Attempt to update non-existent word: {word}")
             return False, f"Word '{word}' does not exist."
         
         if new_level_name:
-            level: Level = self.db.get_level_by_name(new_level_name)
+            level: Level = self.__db.get_level_by_name(new_level_name)
             if not level or new_level_name not in Level.__members__:
                 Log.warning(f"Attempt to update word with non-existent level: {new_level_name}")
                 return False, f"Level '{new_level_name}' does not exist."
-            self.db.update_word_level(word_obj.id, level_id=level.id)
+            self.__db.update_word_level(word_obj.id, level_id=level.id)
         
         Log.info(f"Word updated successfully: {word_obj.text} | {new_level_name if new_level_name else Level(word_obj.level_id).name}")
         return True, f"Word '{word_obj.text}' updated successfully."
@@ -82,17 +82,17 @@ class WordAdminDAO:
         Returns:
             tuple: A boolean indicating success and a message
         """
-        word_obj: IWord = self.db.get_word(word_id)
+        word_obj: IWord = self.__db.get_word(word_id)
         if not word_obj:
             Log.warning(f"Attempt to update non-existent word by ID: {word_id}")
             return False, f"Word with ID '{word_id}' does not exist."
         
         if new_level_name:
-            level: Level = self.db.get_level_by_name(new_level_name)
+            level: Level = self.__db.get_level_by_name(new_level_name)
             if not level or new_level_name not in Level.__members__:
                 Log.warning(f"Attempt to update word with non-existent level: {new_level_name}")
                 return False, f"Level '{new_level_name}' does not exist."
-            self.db.update_word_level(word_obj.id, level_id=level.id)
+            self.__db.update_word_level(word_obj.id, level_id=level.id)
         
         Log.info(f"Word updated successfully: {word_obj.text} | {new_level_name if new_level_name else Level(word_obj.level_id).name}")
         return True, f"Word '{word_obj.text}' updated successfully."
