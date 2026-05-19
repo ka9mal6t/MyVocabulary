@@ -22,7 +22,7 @@ def add_levels():
             db.add_level(level.name)
             Log.info(f"Added level: {level.name}")
         else:
-            Log.info(f"Level already exists: {level.name}")
+            Log.warning(f"Level already exists: {level.name}")
     
 
 

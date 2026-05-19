@@ -17,7 +17,7 @@ class UserDAO:
             tuple: A boolean indicating success and a message
         """
         if self.db.get_user_by_username(username):
-            Log.info(f"Attempt to register existing user: {username}")
+            Log.warning(f"Attempt to register existing user: {username}")
             return False, f"User '{username}' already exists."
             
         
@@ -36,7 +36,7 @@ class UserDAO:
         """
         user = self.db.authenticate_user(username, password)
         if not user:
-            Log.info(f"Failed login attempt for user: {username}")
+            Log.warning(f"Failed login attempt for user: {username}")
             return False, f"User '{username}' not found."
         Log.info(f"User logged in successfully: {username}")
         self.db.update_last_seen(user.id)
