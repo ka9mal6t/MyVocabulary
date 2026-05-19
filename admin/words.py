@@ -22,7 +22,7 @@ class WordAdminDAO:
             Log.warning(f"Attempt to add existing word: {word} | {level_name}")
             return False, f"Word '{word}' already exists."
         
-        level = self.db.get_level_by_name(level_name)
+        level: Level = self.db.get_level_by_name(level_name)
         if not level or level_name not in Level.__members__:
             Log.warning(f"Attempt to add word with non-existent level: {level_name}")
             return False, f"Level '{level_name}' does not exist."
@@ -40,7 +40,7 @@ class WordAdminDAO:
             tuple: A boolean indicating success and a message
         """
 
-        word_obj = self.db.get_word_by_name(word)
+        word_obj: IWord = self.db.get_word_by_name(word)
         if not word_obj:
             Log.warning(f"Attempt to delete non-existent word: {word}")
             return False, f"Word '{word}' does not exist."
@@ -58,20 +58,20 @@ class WordAdminDAO:
         Returns:
             tuple: A boolean indicating success and a message
         """
-        word_obj = self.db.get_word_by_name(word)
+        word_obj: IWord = self.db.get_word_by_name(word)
         if not word_obj:
             Log.warning(f"Attempt to update non-existent word: {word}")
             return False, f"Word '{word}' does not exist."
         
         if new_level_name:
-            level = self.db.get_level_by_name(new_level_name)
+            level: Level = self.db.get_level_by_name(new_level_name)
             if not level or new_level_name not in Level.__members__:
                 Log.warning(f"Attempt to update word with non-existent level: {new_level_name}")
                 return False, f"Level '{new_level_name}' does not exist."
             self.db.update_word_level(word_obj.id, level_id=level.id)
         
-        Log.info(f"Word updated successfully: {word} | {new_level_name if new_level_name else Level(word_obj.level_id).name}")
-        return True, f"Word '{word}' updated successfully."
+        Log.info(f"Word updated successfully: {word_obj.text} | {new_level_name if new_level_name else Level(word_obj.level_id).name}")
+        return True, f"Word '{word_obj.text}' updated successfully."
     
     def update_word_level_by_id(self, word_id, new_level_name=None):
         """
@@ -82,18 +82,17 @@ class WordAdminDAO:
         Returns:
             tuple: A boolean indicating success and a message
         """
-        word_obj = self.db.get_word(word_id)
+        word_obj: IWord = self.db.get_word(word_id)
         if not word_obj:
             Log.warning(f"Attempt to update non-existent word by ID: {word_id}")
             return False, f"Word with ID '{word_id}' does not exist."
         
         if new_level_name:
-            level = self.db.get_level_by_name(new_level_name)
+            level: Level = self.db.get_level_by_name(new_level_name)
             if not level or new_level_name not in Level.__members__:
                 Log.warning(f"Attempt to update word with non-existent level: {new_level_name}")
                 return False, f"Level '{new_level_name}' does not exist."
             self.db.update_word_level(word_obj.id, level_id=level.id)
         
-        Log.info(f"Word updated successfully: {word_obj.name} | {new_level_name if new_level_name else Level(word_obj.level_id).name}")
-        return True, f"Word '{word_obj.name}' updated successfully."
-   
+        Log.info(f"Word updated successfully: {word_obj.text} | {new_level_name if new_level_name else Level(word_obj.level_id).name}")
+        return True, f"Word '{word_obj.text}' updated successfully."
