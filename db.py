@@ -316,13 +316,7 @@ class VocabularyDB:
             )
             conn.commit()
 
-    def delete_user_word(self, user_word_id: int) -> None:
-        with self._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM user_words WHERE id = ?", (user_word_id,))
-            conn.commit()
-
-    def delete_user_word_by_user_and_word(self, user_id: int, word_id: int) -> None:
+    def delete_user_word(self, user_id: int, word_id: int) -> None:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
